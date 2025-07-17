@@ -2,7 +2,6 @@
 
 import time
 
-# Grid: 0 = road, 1 = obstacle, D = destination, V = vehicle
 grid = [
     [0, 0, 1, 0, 'D'],
     [1, 0, 1, 0, 1],
@@ -11,7 +10,6 @@ grid = [
     ['V', 0, 0, 0, 0]
 ]
 
-# Starting position of vehicle
 vehicle_pos = [4, 0]
 
 def print_grid():
@@ -21,7 +19,7 @@ def print_grid():
 
 def move_vehicle():
     global vehicle_pos
-    path = [(4,0), (4,1), (4,2), (4,3), (4,4), (3,4), (2,4), (1,3), (0,4)]  # pre-defined safe path
+    path = [(4,0), (4,1), (4,2), (4,3), (4,4), (3,4), (2,4), (1,3), (0,4)] 
 
     for pos in path:
         x, y = vehicle_pos
