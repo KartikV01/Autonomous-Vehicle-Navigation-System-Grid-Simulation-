@@ -2,7 +2,6 @@
 import time
 from collections import deque
 
-# Grid setup
 grid = [
     [0, 0, 1, 0, 'D'],
     [1, 0, 1, 0, 1],
