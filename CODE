@@ -18,7 +18,6 @@ def print_grid():
         print(" ".join(str(x) for x in row))
     print()
 
-# Simple pathfinding (BFS-like)
 def find_path(start, end):
     rows, cols = len(grid), len(grid[0])
     queue = deque([start])
