@@ -22,14 +22,22 @@ def move_vehicle():
     path = [(4,0), (4,1), (4,2), (4,3), (4,4), (3,4), (2,4), (1,3), (0,4)] 
 
     for pos in path:
+        # clear old
         x, y = vehicle_pos
-        grid[x][y] = 0  # clear old position
-
+        grid[x][y] = 0
+        
+        # move new
         vehicle_pos = [pos[0], pos[1]]
         x, y = vehicle_pos
+
+        # check destination
         if grid[x][y] == 'D':
+            grid[x][y] = 'V'
+            print_grid()
             print("Vehicle has reached the destination! 🏁")
             break
+        
+        # update grid
         grid[x][y] = 'V'
         print_grid()
         time.sleep(0.5)
