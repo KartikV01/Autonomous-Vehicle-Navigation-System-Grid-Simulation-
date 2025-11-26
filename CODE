@@ -1,6 +1,11 @@
-# Autonomous Vehicle Navigation System (Grid Simulation)
-
 import time
+import heapq
+
+# Grid Legend:
+# 0 -> free path
+# 1 -> obstacle
+# 'V' -> vehicle start
+# 'D' -> destination
 
 grid = [
     [0, 0, 1, 0, 'D'],
@@ -10,38 +15,88 @@ grid = [
     ['V', 0, 0, 0, 0]
 ]
 
-vehicle_pos = [4, 0]
+start = (4, 0)
+goal = (0, 4)
 
 def print_grid():
     for row in grid:
         print(" ".join(str(x) for x in row))
     print()
 
+# A* Algorithm
+def astar(start, goal):
+    rows, cols = len(grid), len(grid[0])
+
+    # Heuristic (Manhattan Distance)
+    def heuristic(a, b):
+        return abs(a[0] - b[0]) + abs(a[1] - b[1])
+
+    # Valid neighbors
+    def neighbors(r, c):
+        for dr, dc in [(1,0), (-1,0), (0,1), (0,-1)]:
+            nr, nc = r + dr, c + dc
+            if 0 <= nr < rows and 0 <= nc < cols and grid[nr][nc] != 1:
+                yield (nr, nc)
+
+    open_set = []
+    heapq.heappush(open_set, (0, start))
+
+    came_from = {start: None}
+    g_score = {start: 0}
+
+    while open_set:
+        _, current = heapq.heappop(open_set)
+
+        if current == goal:
+            # Reconstruct path
+            path = []
+            while current:
+                path.append(current)
+                current = came_from[current]
+            return path[::-1]
+
+        for next_cell in neighbors(*current):
+            tentative_g = g_score[current] + 1
+
+            if next_cell not in g_score or tentative_g < g_score[next_cell]:
+                g_score[next_cell] = tentative_g
+                f_score = tentative_g + heuristic(next_cell, goal)
+                heapq.heappush(open_set, (f_score, next_cell))
+                came_from[next_cell] = current
+
+    return None
+
+
 def move_vehicle():
-    global vehicle_pos
-    path = [(4,0), (4,1), (4,2), (4,3), (4,4), (3,4), (2,4), (1,3), (0,4)] 
+    global start
+
+    # Get dynamic path from A*
+    path = astar(start, goal)
+
+    if not path:
+        print("❌ No path found!")
+        return
+
+    print("\nDynamic A* Path Found:", path, "\n")
 
     for pos in path:
-        # clear old
-        x, y = vehicle_pos
-        grid[x][y] = 0
-        
-        # move new
-        vehicle_pos = [pos[0], pos[1]]
-        x, y = vehicle_pos
+        old_x, old_y = start
+        grid[old_x][old_y] = 0  # clear old position
 
-        # check destination
-        if grid[x][y] == 'D':
+        start = pos
+        x, y = start
+
+        if grid[x][y] == 'D':  # reached destination
             grid[x][y] = 'V'
             print_grid()
-            print("Vehicle has reached the destination! 🏁")
-            break
-        
-        # update grid
+            print("🏁 Vehicle reached destination using A*!")
+            return
+
         grid[x][y] = 'V'
         print_grid()
-        time.sleep(0.5)
+        time.sleep(0.4)
 
-print("Starting Vehicle Navigation System...\n")
+
+print("Starting Dynamic A* Based Vehicle Navigation...\n")
 print_grid()
 move_vehicle()
